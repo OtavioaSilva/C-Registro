@@ -1,0 +1,1794 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <locale.h>
+#define MAX_CLIENTES 50
+
+/*
+
+CENTRO UNIVERSITÁRIO AESO BARROS MELO
+ALUNOS: EDVALDO OLIVEIRA, OTÁVIO AUGUSTO E THALES JOSÉ
+PROJETO: MINI PROJETO C, PLANO DE SAÚDE
+PROFESSOR(A): AMELIARA FREIRE SANTOS DE MIRANDA
+
+*/
+
+struct Dependente
+{
+    char cpf_terceiro[15];
+    char nome_terceiro[100];
+    int dia_nasc_terceiro;
+    int mes_nasc_terceiro;
+    int ano_nasc_terceiro;
+
+};
+
+typedef struct
+{
+    char cpf[15];
+    char nome[100];
+    int sexo;
+    char email[100];
+    int dia_nasc;
+    int mes_nasc;
+    int ano_nasc;
+    char telefone[30];
+    int tipoPlano;
+    float valorPlano;
+    int dia_Planovenc;
+    int mes_Planovenc;
+    int ano_Planovenc;
+    int ativo;
+    int idade;
+    int qtdDep;
+    struct Dependente dependente[50];
+
+} Cliente;
+Cliente cliente[MAX_CLIENTES];
+
+struct rgAgora
+{
+    int dia, mes, ano;
+    int h, m, s;
+};
+
+void menu();
+void cadastrar();
+void editar();
+void remover();
+void listarGeral();
+void listarPlano();
+void listarVencimentos();
+void listarEditar();
+void listarOuro();
+void listarDiamante();
+void listarPrata();
+void listarEsmeralda();
+void listarEditarDependente();
+void editarDependente();
+
+int main(int argc, char const *argv[])
+{
+setlocale(LC_ALL, "Portuguese");
+
+
+    menu();
+}
+
+void menu()
+{
+
+    int opc;
+
+    do
+    {
+        system("cls");
+        printf("Núcleo Seguros");
+        printf("\n");
+        printf("\n1- Cadastrar Cliente\n2- Editar Cliente");
+        printf("\n3- Remover Cliente \n4- Listagem Geral \n5- Listagem por Plano");
+        printf("\n6- Listagem dos Vencimentos do Plano de Saúde do Mês\n0 - Sair\n");
+        printf("\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opc);
+        getchar();
+
+        switch(opc)
+        {
+        case 1:
+            cadastrar();
+            break;
+        case 2:
+            editar();
+            break;
+        case 3:
+            remover();
+            break;
+        case 4:
+            listarGeral();
+            break;
+        case 5:
+            listarPlano();
+            break;
+        case 6:
+            listarVencimentos();
+            break;
+        case 0:
+            printf("\nFim do programa\n");
+            break;
+        default:
+            printf("\nDigitou Opção errada, aperte enter e tente novamente\n");
+            break;
+
+        }
+        getchar();
+
+    }
+    while (opc != 0);
+
+}
+// ============================== METODO PARA CADASTRAR CLIENTE ==================================
+void cadastrar()
+{
+    system("cls");
+    char cpf[15];
+    char nome[100];
+    int sexo;
+    char email[100];
+    int dia_nasc;
+    int mes_nasc;
+    int ano_nasc;
+    char telefone[30];
+    char cpf_terceiro[15];
+    char nome_terceiro[100];
+    int dia_nasc_terceiro;
+    int mes_nasc_terceiro;
+    int ano_nasc_terceiro;
+    int tipoPlano;
+    float valorPlano;
+    int dia_Planovenc;
+    int mes_Planovenc;
+    int ano_Planovenc;
+    int opc;
+    int diferenca, hmes = 0, hano= 0, hdia= 0, ano = 0, mes= 0, dia= 0, idade= 0;
+    int qtdDep;
+    int i, x;
+
+
+
+    do
+    {
+
+        printf("\nNome: ");
+        gets(nome);
+        printf("\nCPF: ");
+        scanf("%s",&cpf);
+        printf("\nSexo 1 para Masculino | 2 para Feminino: ");
+        scanf("%d", &sexo);
+        getchar();
+        printf("\nEmail: ");
+        scanf("%s",&email);
+        printf("\nDia do Nascimento do Titular: ");
+        scanf("%d", &dia_nasc);
+        printf("\nMês do Nascimento do Titular: ");
+        scanf("%d", &mes_nasc);
+        printf("\nAno do Nascimento do Titular: ");
+        scanf("%d", &ano_nasc);
+        getchar();
+
+        //=================== METODO PARA TRANSFORMAR A DATA DE NASCIMENTO EM IDADE ===================
+        time_t mytime;
+        mytime = time(NULL);
+        struct tm tm = *localtime(&mytime);
+        printf("Data: %d/%d/%d/\n", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900);
+
+        hano = tm.tm_year + 1900;
+        hdia = tm.tm_mday;
+        hmes = tm.tm_mon + 1;
+
+        diferenca =   365*hano + 30*hmes + hdia
+                      - 365*ano_nasc - 30*mes_nasc - dia_nasc;
+
+        ano = diferenca/365;
+        diferenca = diferenca%365;
+        mes = diferenca/30;
+        diferenca = diferenca%30;
+        dia = diferenca;
+        //=======================================================
+        printf("Idade: %d", ano);
+        printf("\nTelefone: ");
+        scanf("%s",&telefone);
+
+        printf("\nQual o plano que você deseja: ");
+        printf("\n1- Ouro R$ 300,00\n2- Diamante 400,00\n3- Prata 200,00\n4- Esmeralda 500,00\n");
+        scanf("%d", &tipoPlano);
+        printf("Digite o Dia do Vencimento do Plano: ");
+        scanf("%d", &dia_Planovenc);
+        printf("Digite o Mês do Vencimento do Plano: ");
+        scanf("%d", &mes_Planovenc);
+        printf("Digite o Ano do Vencimento do Plano: ");
+        scanf("%d", &ano_Planovenc);
+
+
+        printf("Digite a quantidade de dependentes:");
+        scanf("%d", &qtdDep);
+
+        for (i = 0; i < 50; i++) {
+            if (cliente[i].ativo == 0)
+            {
+                for (x = 0; x< qtdDep; x++)
+                {
+                    getchar();
+                    printf("\nNome do Dependente: ");
+                    gets(nome_terceiro);
+                    printf("\nCPF do Dependente: ");
+                    scanf("%s",&cpf_terceiro);
+                    printf("\nDia do Nascimento do Dependente: ");
+                    scanf("%d", &dia_nasc_terceiro);
+                    printf("\nMês do seu Nascimento do Dependente: ");
+                    scanf("%d", &mes_nasc_terceiro);
+                    printf("\nAno do seu Nascimento do Dependente: ");
+                    scanf("%d", &ano_nasc_terceiro);
+
+
+                    strcpy(cliente[i].dependente[x].nome_terceiro, nome_terceiro);
+                    strcpy(cliente[i].dependente[x].cpf_terceiro, cpf_terceiro);
+                    cliente[i].dependente[x].dia_nasc_terceiro = dia_nasc_terceiro;
+                    cliente[i].dependente[x].mes_nasc_terceiro = mes_nasc_terceiro;
+                    cliente[i].dependente[x].ano_nasc_terceiro = ano_nasc_terceiro;
+                }
+
+                strcpy(cliente[i].nome, nome);
+                strcpy(cliente[i].cpf, cpf);
+                cliente[i].sexo = sexo;
+                strcpy(cliente[i].email, email);
+                cliente[i].dia_nasc = dia_nasc;
+                cliente[i].mes_nasc = mes_nasc;
+                cliente[i].ano_nasc = ano_nasc;
+                cliente[i].idade = ano;
+                strcpy(cliente[i].telefone, telefone);
+                cliente[i].qtdDep = qtdDep;
+                cliente[i].tipoPlano = tipoPlano;
+                cliente[i].dia_Planovenc = dia_Planovenc;
+                cliente[i].mes_Planovenc = mes_Planovenc;
+                cliente[i].ano_Planovenc = ano_Planovenc;
+                cliente[i].ativo=1;
+                break;
+            }
+        }
+        printf("\n1- Continuar\n0- Sair\n");
+        scanf("%d", &opc);
+        if  (opc == 0)
+        {
+            printf("Pressione enter para voltar.");
+        }
+        getchar();
+    }
+    while(opc != 0);
+
+}
+// =============================== METODO PARA EDITAR CLIENTES ====================================
+void editar()
+{
+    int opc;
+    int codigo;
+    char nome[100];
+    char cpf[15];
+    int sexo;
+    char email[100];
+    int dia_nasc;
+    int mes_nasc;
+    int ano_nasc;
+    char telefone[30];
+    char cpf_terceiro[15];
+    char nome_terceiro[100];
+    int dia_nasc_terceiro;
+    int mes_nasc_terceiro;
+    int ano_nasc_terceiro;
+    int tipoPlano;
+    float valorPlano;
+    int dia_Planovenc;
+    int mes_Planovenc;
+    int ano_Planovenc;
+    int diferenca, hmes = 0, hano= 0, hdia= 0, ano = 0, mes= 0, dia= 0, idade= 0;
+
+
+    listarEditar();
+    printf("\n Digite o código do cliente a ser editado: ");
+    scanf("%d", &codigo);
+    --codigo;
+    system("cls");
+    printf("O que deseja editar?\n");
+    printf("1- Nome\n2- CPF\n3- Sexo\n4- Email\n5- Data de Nascimento do Titular\n6- Telefone");
+    printf("\n7- Dependentes");
+    printf("\n8- Plano de Saúde\n9- Data de Vencimento do Plano de Saúde\n0- Sair\n");
+    printf("\n");
+    printf("Escolha uma opção: ");
+    scanf("%d", &opc);
+    getchar();
+    switch(opc)
+    {
+    case 1:
+        printf("Seu nome atual: %s\n", cliente[codigo].nome);
+        printf("Digite o novo nome para alterar: \n");
+        gets(nome);
+        strcpy(cliente[codigo].nome, nome);
+        printf("Nome atualizado com sucesso.");
+        break;
+    case 2:
+        printf("Seu CPF atual: %s\n", cliente[codigo].cpf);
+        printf("Digite o novo CPF para alterar: \n");
+        scanf("%s",&cpf);
+        strcpy(cliente[codigo].cpf, cpf);
+        printf("CPF atualizado com sucesso.");
+        getchar();
+        break;
+    case 3:
+        if (cliente[codigo].sexo == 1)
+        {
+            printf("Seu sexo atual: Masculino\n");
+        }
+        else
+        {
+            printf("Seu sexo atual: Feminino\n");
+        }
+
+        printf("Digite o novo sexo 1- Masculino | 2- Feminino para alterar: \n");
+        scanf("%d", &sexo);
+        cliente[codigo].sexo = sexo;
+        printf("Sexo atualizado com sucesso.");
+
+        break;
+    case 4:
+        printf("Seu Email atual: %s\n", cliente[codigo].email);
+        printf("Digite o novo email para alterar: \n");
+        scanf("%s",&email);
+        strcpy(cliente[codigo].email, email);
+        printf("Email atualizado com sucesso.");
+
+        break;
+    case 5:
+        printf("Sua data de nascimento atual: %d/%d/%d\n", cliente[codigo].dia_nasc, cliente[codigo].mes_nasc, cliente[codigo].ano_nasc);
+        printf("Digite o novo dia para alterar: \n");
+        scanf("%d", &dia_nasc);
+        cliente[codigo].dia_nasc = dia_nasc;
+        getchar();
+        printf("Digite o novo mes para alterar: \n");
+        scanf("%d", &mes_nasc);
+        cliente[codigo].mes_nasc = mes_nasc;
+        getchar();
+        printf("Digite o novo ano para alterar: \n");
+        scanf("%d", &ano_nasc);
+        cliente[codigo].ano_nasc = ano_nasc;
+        getchar();
+        printf("Data alterada com sucesso.");
+
+
+        time_t mytime;
+        mytime = time(NULL);
+        struct tm tm = *localtime(&mytime);
+    
+
+        hano = tm.tm_year + 1900;
+        hdia = tm.tm_mday;
+        hmes = tm.tm_mon + 1;
+
+        diferenca =   365*hano + 30*hmes + hdia
+                      - 365*ano_nasc - 30*mes_nasc - dia_nasc;
+
+        ano = diferenca/365;
+        diferenca = diferenca%365;
+        mes = diferenca/30;
+        diferenca = diferenca%30;
+        dia = diferenca;
+        cliente[codigo].idade = ano;
+
+        break;
+    case 6:
+        printf("Seu telefone atual: %s\n", cliente[codigo].telefone);
+        printf("Digite o telefone para alterar: \n");
+        gets(telefone);
+        strcpy(cliente[codigo].telefone, telefone);
+        printf("Telefone alterado com sucesso.");
+
+        break;
+    case 7:
+        listarEditarDependente(codigo);
+        int aux = 0;
+        aux = codigo;
+        editarDependente(codigo);
+        break;
+
+    case 8:
+        if (cliente[codigo].tipoPlano == 1)
+        {
+            printf("Seu Plano atual: Ouro R$%0.2f\n", cliente[codigo].valorPlano);
+        }
+
+        else if(cliente[codigo].tipoPlano == 2)
+        {
+            printf("Seu Plano atual: Diamante R$%0.2f\n", cliente[codigo].valorPlano);
+        }
+
+        else if(cliente[codigo].tipoPlano == 3)
+        {
+            printf("Seu Plano atual: Prata R$%0.2f\n", cliente[codigo].valorPlano);
+        }
+
+        else if (cliente[codigo].tipoPlano == 4)
+        {
+            printf("Seu Plano atual: Esmeralda R$%0.2f\n", cliente[codigo].valorPlano);
+        }
+        printf("Digite o novo plano para alterar: \n");
+        printf("1- Ouro R$ 300,00\n2- Diamante 400,00\n3- Prata 200,00\n4- Esmeralda 500,00\n\n");
+        scanf("%d", &tipoPlano);
+        cliente[codigo].tipoPlano = tipoPlano;
+
+        break;
+    case 9:
+        printf("Sua data de vencimento do plano atual: %d/%d/%d\n", cliente[codigo].dia_Planovenc, cliente[codigo].mes_Planovenc, cliente[codigo].ano_Planovenc);
+        printf("Digite o novo dia para alterar: \n");
+        scanf("%d", &dia_Planovenc);
+        cliente[codigo].dia_Planovenc = dia_Planovenc;
+        printf("Digite o novo mes para alterar: \n");
+        scanf("%d", &mes_Planovenc);
+        cliente[codigo].mes_Planovenc = mes_Planovenc;
+        printf("Digite o novo ano para alterar: \n");
+        scanf("%d", &ano_Planovenc);
+        cliente[codigo].ano_Planovenc = ano_Planovenc;
+        printf("Data alterada com sucesso.");
+        break;
+
+    case 0:
+        menu();
+        break;
+
+    default:
+        printf("\nDigitou Opção errada, aperte enter e tente novamente\n");
+        break;
+    }
+
+}
+// ================================= METODO PARA REMOVER UM CLIENTE ===============================
+void remover()
+{
+
+    int codigo;
+    listarEditar();
+    printf("\n Digite o código do cliente a ser removido: ");
+    scanf("%d", &codigo);
+    --codigo;
+    cliente[codigo].ativo = 0;
+    printf("\nCliente excluido com sucesso.\n");
+    getchar();
+
+}
+// ================================== METODO PARA LISTAR TUDO ====================================================================
+void listarGeral()
+{
+    system("cls");
+    float valor;
+    int x;
+    int i;
+
+    printf("\n LISTA DE CLIENTES \n");
+    for (i = 0; i < MAX_CLIENTES; i++)
+    {
+
+        if (cliente[i].ativo == 1)
+        {
+
+            if(cliente[i].tipoPlano == 1)
+            {
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 300.00 + (300.00 * 0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 300 - (300 * 0.30);
+                    cliente[i].valorPlano = valor;
+                }
+                else if(cliente[i].idade >= 60)
+                {
+                    valor = 300 + (300 * 0.40);
+                    cliente[i].valorPlano = valor;
+                }
+                else
+                {
+                    valor = 300;
+                    cliente[i].valorPlano = valor;
+                }
+
+            }
+            else if(cliente[i].tipoPlano == 2)
+            {
+
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 400.00 + (400.00*0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 400 - (400 * 0.30);
+                    cliente[i].valorPlano = valor;
+                }
+                else if(cliente[i].idade >= 60)
+                {
+                    valor = 400 + (400 * 0.40);
+                    cliente[i].valorPlano = valor;
+                }
+                else
+                {
+                    valor = 400;
+                    cliente[i].valorPlano = valor;
+                }
+
+            }
+            else if(cliente[i].tipoPlano == 3)
+            {
+
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 200.00 + (200 * 0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 200 - (200 * 0.30);
+                    cliente[i].valorPlano = valor;
+                }
+                else if(cliente[i].idade >= 60)
+                {
+                    valor = 200 + (200 * 0.40);
+                    cliente[i].valorPlano = valor;
+                }
+                else
+                {
+                    valor = 200;
+                    cliente[i].valorPlano = valor;
+                }
+
+
+            }
+            else if(cliente[i].tipoPlano == 4)
+            {
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 500.00 + (500 * 0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 500 - (500 * 0.30);
+                    cliente[i].valorPlano = valor;
+                }
+                else if(cliente[i].idade >= 60)
+                {
+                    valor = 500 + (500 * 0.40);
+                    cliente[i].valorPlano = valor;
+                }
+                else
+                {
+                    valor = 500;
+                    cliente[i].valorPlano = valor;
+                }
+            }
+
+            if (cliente[i].qtdDep > 1)
+            {
+                valor = valor - (valor * 0.2);
+                cliente[i].valorPlano = valor;
+            }
+            if (cliente[i].tipoPlano == 1)
+            {
+
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+
+            }
+
+            else if(cliente[i].tipoPlano == 2)
+            {
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+
+            }
+
+            else if(cliente[i].tipoPlano == 3)
+            {
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+
+            }
+
+            else if (cliente[i].tipoPlano == 4)
+            {
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+
+            }
+
+
+        }
+
+    }
+    printf("\nPressione enter para voltar.");
+}
+// ============================= METODO PARA LISTAR ATRAVÉS DOS PLANOS =============================
+void listarPlano()
+{
+    int opc;
+    system("cls");
+    printf("Qual dos planos você deseja listar: \n");
+    printf("1- Ouro\n2- Diamante\n3- Prata\n4- Esmeralda:\n");
+    scanf("%d", &opc);
+
+    switch (opc)
+    {
+    case 1:
+        listarOuro();
+        break;
+    case 2:
+        listarDiamante();
+        break;
+    case 3:
+        listarPrata();
+        break;
+    case 4:
+        listarEsmeralda();
+
+    default:
+        printf("\nDigitou Opção errada, aperte enter e tente novamente\n");
+        break;
+    }
+    getchar();
+
+}
+// ============================== METODO PARA LISTAR OS VENCIMENTOS ===============================
+void listarVencimentos()
+{
+    int mes;
+    int opc;
+    int i, x;
+    do
+    {
+        system("cls");
+        float valor;
+
+        printf("Digite o mes do vencimento para listar: \n");
+        scanf("%d", &mes);
+        system("cls");
+        printf("\n LISTA DE CLIENTES DO MÊS: %d \n", mes);
+        for (i = 0; i < MAX_CLIENTES; i++)
+        {
+
+            if (cliente[i].ativo == 1)
+            {
+
+
+                if (mes == cliente[i].mes_Planovenc)
+                {
+
+                    if(cliente[i].tipoPlano == 1)
+                    {
+                        if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                        {
+                            valor = 300.00 + (300.00 * 0.30);
+                            cliente[i].valorPlano = valor;
+
+                        }
+                        else if (cliente[i].idade < 13)
+                        {
+                            valor = 300 - (300 * 0.30);
+                            cliente[i].valorPlano = valor;
+                        }
+                        else if(cliente[i].idade >= 60)
+                        {
+                            valor = 300 + (300 * 0.40);
+                            cliente[i].valorPlano = valor;
+                        }
+                        else
+                        {
+                            valor = 300;
+                            cliente[i].valorPlano = valor;
+                        }
+                    }
+                    else if(cliente[i].tipoPlano == 2)
+                    {
+                        if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                        {
+                            valor = 400.00 + (400.00 * 0.30);
+                            cliente[i].valorPlano = valor;
+
+                        }
+                        else if (cliente[i].idade < 13)
+                        {
+                            valor = 400 - (400 * 0.30);
+                            cliente[i].valorPlano = valor;
+                        }
+                        else if(cliente[i].idade >= 60)
+                        {
+                            valor = 400 + (400 * 0.40);
+                            cliente[i].valorPlano = valor;
+                        }
+                        else
+                        {
+                            valor = 400;
+                            cliente[i].valorPlano = valor;
+                        }
+
+
+
+                    }
+                    else if(cliente[i].tipoPlano == 3)
+                    {
+                        if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                        {
+                            valor = 200.00 + (200.00 * 0.30);
+                            cliente[i].valorPlano = valor;
+
+                        }
+                        else if (cliente[i].idade < 13)
+                        {
+                            valor = 200 - (200 * 0.30);
+                            cliente[i].valorPlano = valor;
+                        }
+                        else if(cliente[i].idade >= 60)
+                        {
+                            valor = 200 + (200 * 0.40);
+                            cliente[i].valorPlano = valor;
+                        }
+                        else
+                        {
+                            valor = 200;
+                            cliente[i].valorPlano = valor;
+                        }
+
+                    }
+                    else if(cliente[i].tipoPlano == 4)
+                    {
+
+                        if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                        {
+                            valor = 500.00 + (500.00 * 0.30);
+                            cliente[i].valorPlano = valor;
+
+                        }
+                        else if (cliente[i].idade < 13)
+                        {
+                            valor = 500 - (500 * 0.30);
+                            cliente[i].valorPlano = valor;
+                        }
+                        else if(cliente[i].idade >= 60)
+                        {
+                            valor = 500 + (500 * 0.40);
+                            cliente[i].valorPlano = valor;
+                        }
+                        else
+                        {
+                            valor = 500;
+                            cliente[i].valorPlano = valor;
+                        }
+
+                    }
+
+                    if (cliente[i].qtdDep > 1)
+                    {
+                        valor = valor - (valor * 0.2);
+                        cliente[i].valorPlano = valor;
+                    }
+
+
+                    if (cliente[i].tipoPlano == 1)
+                    {
+
+                        if(cliente[i].sexo == 1)
+                        {
+                            if(cliente[i].qtdDep < 1)
+                            {
+                                printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                            }
+                            else
+                            {
+                                for(x = 0; x < cliente[i].qtdDep; x++)
+                                {
+                                    printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            if(cliente[i].qtdDep < 1)
+                            {
+                                printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                            }
+                            else
+                            {
+                                for(x = 0; x < cliente[i].qtdDep; x++)
+                                {
+                                    printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                                }
+                            }
+
+
+                        }
+
+
+                    }
+
+                    else if(cliente[i].tipoPlano == 2)
+                    {
+                        if(cliente[i].sexo == 1)
+                        {
+                            if(cliente[i].qtdDep < 1)
+                            {
+                                printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                            }
+                            else
+                            {
+                                for(x = 0; x < cliente[i].qtdDep; x++)
+                                {
+                                    printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            if(cliente[i].qtdDep < 1)
+                            {
+                                printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                            }
+                            else
+                            {
+                                for(x = 0; x < cliente[i].qtdDep; x++)
+                                {
+                                    printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                                }
+                            }
+
+
+                        }
+
+                    }
+
+                    else if(cliente[i].tipoPlano == 3)
+                    {
+                        if(cliente[i].sexo == 1)
+                        {
+                            if(cliente[i].qtdDep < 1)
+                            {
+                                printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                            }
+                            else
+                            {
+                                for(x = 0; x < cliente[i].qtdDep; x++)
+                                {
+                                    printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            if(cliente[i].qtdDep < 1)
+                            {
+                                printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                            }
+                            else
+                            {
+                                for(x = 0; x < cliente[i].qtdDep; x++)
+                                {
+                                    printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                                }
+                            }
+
+
+                        }
+
+                    }
+
+                    else if (cliente[i].tipoPlano == 4)
+                    {
+                        if(cliente[i].sexo == 1)
+                        {
+                            if(cliente[i].qtdDep < 1)
+                            {
+                                printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                            }
+                            else
+                            {
+                                for(x = 0; x < cliente[i].qtdDep; x++)
+                                {
+                                    printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            if(cliente[i].qtdDep < 1)
+                            {
+                                printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                            }
+                            else
+                            {
+                                for(x = 0; x < cliente[i].qtdDep; x++)
+                                {
+                                    printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                                }
+                            }
+
+
+                        }
+
+                    }
+                }
+                else
+                {
+                    printf("Não foi encontrado vencimentos neste mês. Tente outro mês.\n");
+                }
+                getchar();
+
+            }
+        }
+        printf("Digite 0 para sair ou 1 para nova pesquisa: ");
+        scanf("%d", &opc);
+
+    }
+    while(opc !=0);
+}
+//==============================METODO Q LISTA O EDITAR=======================================================================
+void listarEditar()
+{
+    int i, x;
+    system("cls");
+    float valor;
+    printf("\n LISTA DE CLIENTES \n");
+    for (i = 0; i < MAX_CLIENTES; i++)
+    {
+
+        if (cliente[i].ativo == 1)
+        {
+            if(cliente[i].tipoPlano == 1)
+            {
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 300.00 + (300.00 * 0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 300 - (300 * 0.30);
+                    cliente[i].valorPlano = valor;
+                }
+                else if(cliente[i].idade >= 60)
+                {
+                    valor = 300 + (300 * 0.40);
+                    cliente[i].valorPlano = valor;
+                }
+                else
+                {
+                    valor = 300;
+                    cliente[i].valorPlano = valor;
+                }
+
+            }
+            else if(cliente[i].tipoPlano == 2)
+            {
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 400.00 + (400.00 * 0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 400 - (400 * 0.30);
+                    cliente[i].valorPlano = valor;
+                }
+                else if(cliente[i].idade >= 60)
+                {
+                    valor = 400 + (400 * 0.40);
+                    cliente[i].valorPlano = valor;
+                }
+                else
+                {
+                    valor = 400;
+                    cliente[i].valorPlano = valor;
+                }
+            }
+            else if(cliente[i].tipoPlano == 3)
+            {
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 200.00 + (200.00 * 0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 200 - (200 * 0.30);
+                    cliente[i].valorPlano = valor;
+                }
+                else if(cliente[i].idade >= 60)
+                {
+                    valor = 200 + (200 * 0.40);
+                    cliente[i].valorPlano = valor;
+                }
+                else
+                {
+                    valor = 200;
+                    cliente[i].valorPlano = valor;
+                }
+
+            }
+            else if(cliente[i].tipoPlano == 4)
+            {
+
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 500.00 + (500.00 * 0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 500 - (500 * 0.30);
+                    cliente[i].valorPlano = valor;
+                }
+                else if(cliente[i].idade >= 60)
+                {
+                    valor = 500 + (500 * 0.40);
+                    cliente[i].valorPlano = valor;
+                }
+                else
+                {
+                    valor = 500;
+                    cliente[i].valorPlano = valor;
+                }
+
+            }
+
+            if (cliente[i].qtdDep > 1)
+            {
+                valor = valor - (valor * 0.2);
+                cliente[i].valorPlano = valor;
+            }
+
+
+            if (cliente[i].tipoPlano == 1)
+            {
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n", i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n", i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n", i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n", i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+
+            }
+
+            else if(cliente[i].tipoPlano == 2)
+            {
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+
+            }
+
+            else if(cliente[i].tipoPlano == 3)
+            {
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+            }
+
+            else if (cliente[i].tipoPlano == 4)
+            {
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(COD: %d) (CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",i+1, cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+
+            }
+
+        }
+
+    }
+    printf("\nPressione enter para voltar.");
+}
+// ================================ METODO PARA LISTAR OS CLIENTES OURO ============================
+void listarOuro()
+{
+    int i, x;
+    system("cls");
+    float valor;
+    printf("\n LISTA DE CLIENTES OURO \n");
+    for (i = 0; i < MAX_CLIENTES; i++)
+    {
+
+        if (cliente[i].ativo == 1)
+        {
+
+            if (cliente[i].tipoPlano == 1)
+            {
+
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 300.00 + (300.00*0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 300.00 - (300.00 * 0.3);
+                    cliente[i].valorPlano = valor;
+                }
+                else if (cliente[i].idade >= 60)
+                {
+                    valor = 300.00 + (300.00 * 0.4);
+                    cliente[i].valorPlano = valor;
+                }
+                else
+                {
+                    valor = 300;
+                    cliente[i].valorPlano = valor;
+                }
+
+
+                if (cliente[i].qtdDep > 1)
+                {
+                    valor = valor - (valor * 0.2);
+                    cliente[i].valorPlano = valor;
+                }
+
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Ouro) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+
+            }
+
+        }
+    }
+    printf("\nPressione enter para voltar.");
+}
+//================================ METODO PARA LISTAR OS CLIENTES DIAMANTE ============================
+void listarDiamante()
+{
+    int i, x;
+    system("cls");
+    float valor;
+    printf("\n LISTA DE CLIENTES DIAMANTE \n");
+    for (i = 0; i < MAX_CLIENTES; i++)
+    {
+
+        if (cliente[i].ativo == 1)
+        {
+
+
+            if (cliente[i].tipoPlano == 2)
+            {
+
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 400.00 + (400.00*0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 400.00 - (400.00 * 0.3);
+                    cliente[i].valorPlano = valor;
+                }
+                else if (cliente[i].idade >= 60)
+                {
+                    valor = 400.00 + (400.00 * 0.4);
+                    cliente[i].valorPlano = valor;
+                }
+
+                else
+                {
+                    valor = 400;
+                    cliente[i].valorPlano = valor;
+                }
+
+                if (cliente[i].qtdDep > 1)
+                {
+                    valor = valor - (valor * 0.2);
+                    cliente[i].valorPlano = valor;
+                }
+
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Diamante) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+
+
+
+            }
+
+        }
+    }
+    printf("\nPressione enter para voltar.");
+}
+//================================ METODO PARA LISTAR OS CLIENTES PRATA ============================
+void listarPrata()
+{
+    int i, x;
+    system("cls");
+    float valor;
+    printf("\n LISTA DE CLIENTES PRATA \n");
+    for (i = 0; i < MAX_CLIENTES; i++)
+    {
+
+        if (cliente[i].ativo == 1)
+        {
+
+            if (cliente[i].tipoPlano == 3)
+            {
+
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 200.00 + (200.00*0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 200.00 - (200.00 * 0.3);
+                    cliente[i].valorPlano = valor;
+                }
+                else if (cliente[i].idade >= 60)
+                {
+                    valor = 200.00 + (200.00 * 0.4);
+                    cliente[i].valorPlano = valor;
+                }
+
+                else
+                {
+                    valor = 200;
+                    cliente[i].valorPlano = valor;
+                }
+                if (cliente[i].qtdDep > 1)
+                {
+                    valor = valor - (valor * 0.2);
+                    cliente[i].valorPlano = valor;
+                }
+
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Prata) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+
+            }
+
+        }
+    }
+    printf("\nPressione enter para voltar.");
+}
+
+//================================ METODO PARA LISTAR OS CLIENTES ESMERALDA =================================================
+
+void listarEsmeralda()
+{
+    int i, x;
+    system("cls");
+    float valor;
+    printf("\n LISTA DE CLIENTES ESMERALDA \n");
+    for (i = 0; i < MAX_CLIENTES; i++)
+    {
+
+        if (cliente[i].ativo == 1)
+        {
+
+
+            if (cliente[i].tipoPlano == 4)
+            {
+
+                if (cliente[i].sexo == 2 && cliente[i].idade >= 13 && cliente[i].idade < 35)
+                {
+                    valor = 500.00 + (500.00*0.30);
+                    cliente[i].valorPlano = valor;
+
+                }
+                else if (cliente[i].idade < 13)
+                {
+                    valor = 500.00 - (500.00 * 0.3);
+                    cliente[i].valorPlano = valor;
+                }
+                else if (cliente[i].idade >= 60)
+                {
+                    valor = 500.00 + (500.00 * 0.4);
+                    cliente[i].valorPlano = valor;
+                }
+
+                else
+                {
+                    valor = 500;
+                    cliente[i].valorPlano = valor;
+                }
+
+
+                if (cliente[i].qtdDep > 1)
+                {
+                    valor = valor - (valor * 0.2);
+                    cliente[i].valorPlano = valor;
+                }
+                if(cliente[i].sexo == 1)
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: M) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(cliente[i].qtdDep < 1)
+                    {
+                        printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (VALOR: R$%.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+
+                    }
+                    else
+                    {
+                        for(x = 0; x < cliente[i].qtdDep; x++)
+                        {
+                            printf("(CPF: %s) (NOMETITULAR: %s) (SEXO: F) (FONE: %s) (EMAIL: %s) (IDADE: %d) (PLANO: Esmeralda) (NOMEDEP.: %s) (VALOR: R$%0.2f) (VENC: %d/%d/%d)\n\n",cliente[i].cpf, cliente[i].nome, cliente[i].telefone, cliente[i].email, cliente[i].idade, cliente[i].dependente[x].nome_terceiro, cliente[i].valorPlano, cliente[i].dia_Planovenc, cliente[i].mes_Planovenc, cliente[i].ano_Planovenc);
+                        }
+                    }
+
+
+                }
+            }
+
+        }
+    }
+    printf("\nPressione enter para voltar.");
+}
+void listarEditarDependente(int codigo)
+{
+    int i, x;
+    system("cls");
+    float valor;
+    printf("\n LISTA DE DEPENDENTES \n");
+
+    if (cliente[codigo].ativo == 1)
+    {
+
+        for (x = 0; x < cliente[codigo].qtdDep; x++)
+        {
+
+
+            printf("\n ------------\n");
+            printf("Código: %d\n", x+1);
+            printf("Nome do Dependente: %s\n", cliente[codigo].dependente[x].nome_terceiro);
+            printf("CPF do Dependente: %s\n", cliente[codigo].dependente[x].cpf_terceiro);
+            printf("Data do Nascimento do Dependente: %d/%d/%d\n", cliente[codigo].dependente[x].dia_nasc_terceiro, cliente[codigo].dependente[x].mes_nasc_terceiro, cliente[codigo].dependente[x].ano_nasc_terceiro);
+        }
+    }
+}
+
+void editarDependente(int codigo)
+{
+    int opc;
+    int codigoDep;
+    int auxCod = codigo;
+    char nome[100];
+    char cpf[15];
+    int sexo;
+    char email[100];
+    int dia_nasc;
+    int mes_nasc;
+    int ano_nasc;
+    char telefone[30];
+    char cpf_terceiro[15];
+    char nome_terceiro[100];
+    int dia_nasc_terceiro = 0;
+    int mes_nasc_terceiro = 0;
+    int ano_nasc_terceiro = 0;
+
+
+    printf("\n Digite o código do dependente a ser editado: ");
+    scanf("%d", &codigoDep);
+    --codigoDep;
+    system("cls");
+    printf("O que deseja editar?\n");
+    printf("1- Nome\n2- CPF\n3- Data do Nascimento\n0- Sair\n");
+    printf("\n");
+    printf("Escolha uma opção: ");
+    scanf("%d", &opc);
+    getchar();
+    switch(opc)
+    {
+    case 1:
+        printf("Nome do dependente atual: %s\n", cliente[codigo].dependente[codigoDep].nome_terceiro);
+        printf("Digite o novo nome do dependente: ");
+        gets(nome_terceiro);
+        strcpy(cliente[codigo].dependente[codigoDep].nome_terceiro, nome_terceiro);
+        printf("Nome do dependente atualizado com sucesso.");
+        break;
+    case 2:
+        printf("CPF do dependente atual: %s\n", cliente[codigo].dependente[codigoDep].cpf_terceiro);
+        printf("Digite o novo CPF do dependente: ");
+        scanf("%s",&cpf_terceiro);
+        strcpy(cliente[codigo].dependente[codigoDep].cpf_terceiro, cpf_terceiro);
+        printf("CPF do dependente atualizado com sucesso.");
+        break;
+    case 3:
+        printf("Data do Nascimento atual: %d/%d/%d\n", cliente[codigo].dependente[codigoDep].dia_nasc_terceiro, cliente[codigo].dependente[codigoDep].mes_nasc_terceiro, cliente[codigo].dependente[codigoDep].ano_nasc_terceiro);
+        printf("Digite o novo dia para alterar: \n");
+        scanf("%d", &dia_nasc_terceiro);
+        cliente[codigo].dependente[codigoDep].dia_nasc_terceiro = dia_nasc_terceiro;
+        printf("Digite o novo mês para alterar: \n");
+        scanf("%d", &mes_nasc_terceiro);
+        cliente[codigo].dependente[codigoDep].mes_nasc_terceiro = mes_nasc_terceiro;
+        printf("Digite o novo ano para alterar: \n");
+        scanf("%d", &ano_nasc_terceiro);
+        cliente[codigo].dependente[codigoDep].ano_nasc_terceiro = ano_nasc_terceiro;
+        printf("Data alterada com sucesso.");
+        
+    case 0:
+        menu();
+        break;
+        
+
+    default:
+        printf("\nDigitou Opção errada, aperte enter e tente novamente\n");
+        break;
+    }
+
+}
